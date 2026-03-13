@@ -78,8 +78,10 @@ const Topic = () => {
                 console.log(err);
             })
     }
-   
+
     const handleSubmit = (values, { resetForm }) => {
+        console.log(values);
+
         axios.post("https://generateapi.techsnack.online/api/topic", values, {
             headers: {
                 Authorization: token
@@ -88,6 +90,7 @@ const Topic = () => {
             alert("Topic added successfully!")
             setOpen(false)
             resetForm()
+            fetchTopic()
         }).catch((err) => {
             console.log(err);
 
@@ -101,6 +104,7 @@ const Topic = () => {
         })
             .then(() => {
                 alert("topic Deleted Successfully!")
+                fetchTopic()
             })
             .catch((err) => {
                 console.log(err);
@@ -108,11 +112,11 @@ const Topic = () => {
             })
     }
     const [languages, setLanguage] = useState([])
-    const [selectedLanguage, setSelectedLanguage] = useState("none")
+    const [selectedLanguage, setSelectedLanguage] = useState("")
     const handleChange = (event) => {
         setSelectedLanguage(event.target.value);
         console.log(event.target.value);
-        
+
     };
 
     const fetchLanguages = () => {
@@ -141,7 +145,7 @@ const Topic = () => {
             <Modal
                 open={open}
                 onClose={handleClose}
-               className='border  border-0'
+                className='border  border-0'
             >
                 <Box sx={style}>
                     <h1 className="text-3xl font-bold">Add topic</h1>
@@ -149,33 +153,39 @@ const Topic = () => {
                         initialValues={ini}
                         onSubmit={handleSubmit}
                     >
-                        <Form className="p-2">
-                            <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Language</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={selectedLanguage}
-                                    label="language"
-                                    name='languagename'
-                                    onChange={handleChange}
-                                >
-                                    {
-                                        languages.map((item, index) => {
-                                            return (
+                        {
+                            (props) => (
 
-                                                <MenuItem value={item._id}>{item.languagename}</MenuItem>
-                                            )
-                                        })
-                                    }
 
-                                </Select>
-                            </FormControl>
-                            <Field name="topicname" placeholder="Enter Topic" className="w-full p-2 border border-1 border-gray-400 mb-3"></Field>
+                                <Form className="p-2">
+                                    <FormControl fullWidth>
+                                        <InputLabel id="demo-simple-select-label">Language</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-label"
+                                            id="demo-simple-select"
+                                            value={props.values.languagename}
+                                            label="language"
+                                            name='languagename'
+                                            onChange={props.handleChange}
+                                        >
+                                            {
+                                                languages.map((item, index) => {
+                                                    return (
 
-                            <Button variant='contained' className='w-full' type='submit' >Submit</Button>
+                                                        <MenuItem value={item._id}>{item.languagename}</MenuItem>
+                                                    )
+                                                })
+                                            }
 
-                        </Form>
+                                        </Select>
+                                    </FormControl>
+                                    <Field name="topicname" placeholder="Enter Topic" className="w-full p-2 border border-1 border-gray-400 mb-3"></Field>
+
+                                    <Button variant='contained' className='w-full' type='submit' >Submit</Button>
+
+                                </Form>
+                            )
+                        }
                     </Formik>
                 </Box>
             </Modal>
