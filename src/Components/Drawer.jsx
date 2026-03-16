@@ -23,6 +23,7 @@ import Questions from '../Pages/Questions';
 import Topic from '../Pages/Topic';
 import Language from '../Pages/Language';
 import Dashboard from '../Pages/Dashboard';
+import Counters from './Counters';
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
@@ -47,20 +48,20 @@ function ResponsiveDrawer(props) {
 
     const drawer = (
         <div>
-            <Toolbar />
+            <Toolbar><strong>E Learning</strong></Toolbar>
             <Divider />
             <List>
-                <ListItem disablePadding>
-                    <ListItemButton>
 
-                        <Link to={`${url}`} className="flex items-center gap-2 w-full">Dashboard</Link>
-                    </ListItemButton>
-                </ListItem>
-                {['Language', 'Topic', 'Questions'].map((text, index) => (
+                {['Dashboard', 'Language', 'Topic', 'Questions'].map((text, index) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton>
 
-                            <Link to={`${url}/${text.toLowerCase()}`} className="flex items-center gap-2 w-full">{text}</Link>
+                            <Link
+                                to={text === 'Dashboard' ? `${url}` : `${url}/${text.toLowerCase()}`}
+                                className="flex items-center gap-2 w-full"
+                            >
+                                {text}
+                            </Link>
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -74,7 +75,7 @@ function ResponsiveDrawer(props) {
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar
+            {/* <AppBar
                 position="fixed"
                 sx={{
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
@@ -95,7 +96,7 @@ function ResponsiveDrawer(props) {
                         Hello, {currentUser.split("@")[0]}
                     </Typography>
                 </Toolbar>
-            </AppBar>
+            </AppBar> */}
             <Box
                 component="nav"
                 sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -137,7 +138,9 @@ function ResponsiveDrawer(props) {
             >
                 <Toolbar></Toolbar>
                 <Switch>
-
+                    <Route exact path={`${path}`}>
+                        <Counters />
+                    </Route>
                     <Route path={`${path}/topic`}>
                         <Topic />
                     </Route>
@@ -148,8 +151,8 @@ function ResponsiveDrawer(props) {
                         <Language />
 
                     </Route>
-                   
-                    
+
+
                 </Switch>
 
             </Box>

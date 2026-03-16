@@ -8,6 +8,8 @@ import Dashboard from './Pages/Dashboard';
 import Language from './Pages/Language';
 import Topic from './Pages/Topic';
 import Questions from './Pages/Questions';
+import Drawer from '@mui/material/Drawer';
+import ResponsiveDrawer from './Components/Drawer';
 function App() {
   return (
     <div className="App">
@@ -15,8 +17,9 @@ function App() {
         <Switch>
           
           <Route path="/dashboard">
+            <ResponsiveDrawer/>
             <Dashboard/>
-          
+
           </Route>
           <Route path="/signup">
             <SIgnUp/>

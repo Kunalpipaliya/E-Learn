@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Field, Formik, Form } from 'formik';
 import { useState,useEffect } from 'react';
@@ -74,7 +73,7 @@ const Language = () => {
     }
     useEffect(()=>{
         fetchLanguages()
-    },[languages])
+    },[])
     const handleSubmit = (values, { resetForm }) => {
         axios.post("https://generateapi.techsnack.online/api/language", values, {
             headers: {
@@ -84,6 +83,7 @@ const Language = () => {
             alert("Language added successfully!")
             setOpen(false)
             resetForm()
+            fetchLanguages()
         }).catch((err) => {
             console.log(err);
 
@@ -97,19 +97,25 @@ const Language = () => {
         })
         .then(()=>{
             alert("laguage Deleted Successfully!")
+            fetchLanguages()
         })
         .catch((err)=>{
             console.log(err);
             
         })
     }
+    const [search,setSearch]=useState("")
+    const filterdLanguages=languages.filter((l)=>l.languagename.toLowerCase().includes(search.toLowerCase()))
+    const searchLanguage=(e)=>{
+        setSearch(e.target.value)
+    }
     return (
         <div>
             <Button onClick={handleOpen} variant='contained'>Add Language</Button>
+            <input type="text" placeholder='Search here...'  className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchLanguage} value={search} />
             <Modal
                 open={open}
                 onClose={handleClose}
-                sx={{ border: '5px solid transparent' }}
             >
                 <Box sx={style}>
                     <h1 className="text-3xl font-bold">Add language</h1>
@@ -125,6 +131,7 @@ const Language = () => {
                     </Formik>
                 </Box>
             </Modal>
+            
             <TableContainer component={Paper} sx={{mt:3}}>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                     <TableHead>
@@ -137,7 +144,7 @@ const Language = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {languages.map((item,index) => (
+                        {filterdLanguages.map((item,index) => (
                             <StyledTableRow >
                                 
                                 <StyledTableCell align="left">{index+1}</StyledTableCell>

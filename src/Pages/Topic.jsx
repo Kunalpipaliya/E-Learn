@@ -139,9 +139,21 @@ const Topic = () => {
         fetchTopic()
 
     }, [])
+    const [search, setSearch] = useState("")
+    const filteredTopic = topic.filter((item) => {
+        const searchLower = search.toLowerCase();
+        return (
+            item.languagename?.languagename?.toLowerCase().includes(searchLower) ||
+            item.topicname.toLowerCase().includes(searchLower)
+        );
+    });
+    const searchTopic = (e) => {
+        setSearch(e.target.value)
+    }
     return (
         <div>
             <Button onClick={handleOpen} variant='contained'>Add Topic</Button>
+            <input type="text" placeholder='Search here...' className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchTopic} value={search} />
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -202,7 +214,7 @@ const Topic = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {topic.map((item, index) => (
+                        {filteredTopic.map((item, index) => (
                             <StyledTableRow >
 
                                 <StyledTableCell align="left">{index + 1}</StyledTableCell>
