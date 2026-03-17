@@ -45,6 +45,7 @@ function ResponsiveDrawer(props) {
             setMobileOpen(!mobileOpen);
         }
     };
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"))
 
     const drawer = (
         <div>
@@ -66,12 +67,12 @@ function ResponsiveDrawer(props) {
                     </ListItem>
                 ))}
             </List>
+            
         </div>
     );
 
     // Remove this const when copying and pasting into your project.
     const container = window !== undefined ? () => window().document.body : undefined;
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"))
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />

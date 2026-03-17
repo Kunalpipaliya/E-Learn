@@ -28,7 +28,6 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 400,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
   boxShadow: 24,
   p: 4,
 };
@@ -79,23 +78,41 @@ const Questions = () => {
         console.log(err);
       })
   }
-
+  const [editIndex, setEditIndex] = useState(null)
   const handleSubmit = (values, { resetForm }) => {
     console.log(values);
+    if (editIndex !== null) {
+      axios.patch(`https://generateapi.techsnack.online/api/question/${editIndex}`, values, {
+        headers: {
+          Authorization: token
+        }
+      }).then(() => {
+        alert("Question Updated successfully")
+        setOpen(false)
+        setEditIndex(null)
+        fetchQuestion()
 
-    axios.post("https://generateapi.techsnack.online/api/question", values, {
-      headers: {
-        Authorization: token
-      }
-    }).then(() => {
-      alert("Question added successfully!")
-      setOpen(false)
-      resetForm()
-      fetchQuestion()
-    }).catch((err) => {
-      console.log(err);
+      }).catch((err) => {
+        console.log(err);
 
-    })
+      })
+    }
+    else {
+
+      axios.post("https://generateapi.techsnack.online/api/question", values, {
+        headers: {
+          Authorization: token
+        }
+      }).then(() => {
+        alert("Question added successfully!")
+        setOpen(false)
+        resetForm()
+        fetchQuestion()
+      }).catch((err) => {
+        console.log(err);
+
+      })
+    }
   }
   const handleDelete = (id) => {
     axios.delete(`https://generateapi.techsnack.online/api/question/${id}`, {
@@ -158,32 +175,49 @@ const Questions = () => {
     fetchQuestion()
 
   }, [])
+  
+  const handleEdit = (item) => {
+    setOpen(true)
+    const langId=item.topicname.languagename._id
+    const topicId=item.topicname._id
+    setSelectedLanguage(langId)
+    setSelectedTopic(topicId)
+    console.log(langId);
+    console.log(topicId);
+    setIni({
+      question: item.question,
+      topicname: topicId,
+      languagename: langId
+    })
+    setEditIndex(item._id)
+  }
   const [search, setSearch] = useState("")
   const filteredQuestions = Question.filter((item) => {
     const searchLower = search.toLowerCase();
     return (
-        item.question?.toLowerCase().includes(searchLower) ||
-        item.languagename?.languagename?.toLowerCase().includes(searchLower) ||
-        item.topicname?.topicname?.toLowerCase().includes(searchLower)
+      item.question?.toLowerCase().includes(searchLower) ||
+      item.languagename?.languagename?.toLowerCase().includes(searchLower) ||
+      item.topicname?.topicname?.toLowerCase().includes(searchLower)
     );
-});
+  });
   const searchQuestion = (e) => {
     setSearch(e.target.value)
   }
   return (
     <div>
       <Button onClick={handleOpen} variant='contained'>Add Question</Button>
-      <input type="text" placeholder='Search here...'  className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchQuestion} value={search} />
+      <input type="text" placeholder='Search here...' className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchQuestion} value={search} />
       <Modal
         open={open}
         onClose={handleClose}
         className='border  border-0'
       >
         <Box sx={style}>
-          <h1 className="text-3xl font-bold">Add Question</h1>
+          <h1 className="text-3xl font-bold">{editIndex === null ? "Add" : "Edit"} Question</h1>
           <Formik
             initialValues={ini}
             onSubmit={handleSubmit}
+            enableReinitialize={true}
           >
             {
 
@@ -191,15 +225,16 @@ const Questions = () => {
 
 
                 <Form className="p-2">
-                  <FormControl fullWidth sx={{my:1}}>
+                  <FormControl fullWidth sx={{ my: 1 }}>
                     <InputLabel id="demo-simple-select-label">Language</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      value={props.values.languagename}
+                      value={editIndex === null ? props.values.languagename : selectedLanguage}
                       label="language"
                       name='languagename'
                       onChange={props.handleChange}
+                      disabled={editIndex !== null}
                     >
                       {
                         languages.map((item, index) => {
@@ -212,12 +247,12 @@ const Questions = () => {
 
                     </Select>
                   </FormControl>
-                  <FormControl fullWidth sx={{mb:1}}>
+                  <FormControl fullWidth sx={{ mb: 1 }}>
                     <InputLabel id="demo-simple-select-label">Topic</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      value={props.values.topicname}
+                      value={ props.values.topicname}
                       label="topic"
                       name='topicname'
                       onChange={props.handleChange}
@@ -242,7 +277,7 @@ const Questions = () => {
                   </FormControl>
                   <Field name="question" placeholder="Enter Question" className="w-full p-2 border border-1 border-gray-400 mb-3" disabled={!props.values.topicname}></Field>
 
-                  <Button variant='contained' className='w-full' type='submit' >Submit</Button>
+                  <Button variant='contained' className='w-full' type='submit' >{editIndex === null ? "Submit" : "Update"}</Button>
 
                 </Form>
               )
@@ -265,14 +300,14 @@ const Questions = () => {
           </TableHead>
           <TableBody>
             {filteredQuestions.map((item, index) => (
-              <StyledTableRow >
+              <StyledTableRow key={item._id} >
 
                 <StyledTableCell align="left">{index + 1}</StyledTableCell>
                 <StyledTableCell align="center">{item.languagename.languagename}</StyledTableCell>
                 <StyledTableCell align="center">{item.topicname.topicname}</StyledTableCell>
                 <StyledTableCell align="center">{item.question}</StyledTableCell>
                 <StyledTableCell align="right"><DeleteIcon color='error' onClick={() => { handleDelete(item._id) }} /></StyledTableCell>
-                <StyledTableCell align="right" ><EditSquareIcon color='primary' /></StyledTableCell>
+                <StyledTableCell align="right" ><EditSquareIcon color='primary' onClick={() => handleEdit(item)} /></StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import { Field, Formik, Form } from 'formik';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -22,7 +22,6 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 400,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
     boxShadow: 24,
     p: 4,
 };
@@ -55,84 +54,108 @@ const Language = () => {
     const [ini, setIni] = useState({
         languagename: ""
     })
-    const [languages,setLanguage]=useState([])
-    const fetchLanguages=()=>{
-        axios.get("https://generateapi.techsnack.online/api/language",{
+    const [languages, setLanguage] = useState([])
+    const fetchLanguages = () => {
+        axios.get("https://generateapi.techsnack.online/api/language", {
             headers:
             {
-                Authorization:token
+                Authorization: token
             }
         })
-        .then((res)=>{
-            console.log(res.data.Data);
-            setLanguage(res.data.Data)
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
+            .then((res) => {
+                console.log(res.data.Data);
+                setLanguage(res.data.Data)
+            })
+            .catch((err) => {
+                console.log(err);
+            })
     }
-    useEffect(()=>{
+    useEffect(() => {
         fetchLanguages()
-    },[])
+    }, [])
+    const [editIndex, setEditIndex] = useState(null)
     const handleSubmit = (values, { resetForm }) => {
-        axios.post("https://generateapi.techsnack.online/api/language", values, {
+        if (editIndex !== null) {
+            axios.patch(`https://generateapi.techsnack.online/api/language/${editIndex}`,values,{
+                headers:{
+                    Authorization:token
+                }
+            }).then(()=>{
+                alert("language upadated successfully")
+                fetchLanguages()
+                setOpen(false)
+                setEditIndex(null)
+            }).catch((err)=>{
+                console.log(err);
+            })
+        }
+        else {
+
+            axios.post("https://generateapi.techsnack.online/api/language", values, {
+                headers: {
+                    Authorization: token
+                }
+            }).then(() => {
+                alert("Language added successfully!")
+                setOpen(false)
+                resetForm()
+                fetchLanguages()
+            }).catch((err) => {
+                console.log(err);
+
+            })
+        }
+    }
+    const handleDelete = (id) => {
+        axios.delete(`https://generateapi.techsnack.online/api/language/${id}`, {
             headers: {
                 Authorization: token
             }
-        }).then(() => {
-            alert("Language added successfully!")
-            setOpen(false)
-            resetForm()
-            fetchLanguages()
-        }).catch((err) => {
-            console.log(err);
+        })
+            .then(() => {
+                alert("laguage Deleted Successfully!")
+                fetchLanguages()
+            })
+            .catch((err) => {
+                console.log(err);
 
-        })
+            })
     }
-    const handleDelete=(id)=>{
-        axios.delete(`https://generateapi.techsnack.online/api/language/${id}`,{
-            headers:{
-                Authorization:token
-            }
-        })
-        .then(()=>{
-            alert("laguage Deleted Successfully!")
-            fetchLanguages()
-        })
-        .catch((err)=>{
-            console.log(err);
-            
-        })
-    }
-    const [search,setSearch]=useState("")
-    const filterdLanguages=languages.filter((l)=>l.languagename.toLowerCase().includes(search.toLowerCase()))
-    const searchLanguage=(e)=>{
+
+    const [search, setSearch] = useState("")
+    const filterdLanguages = languages.filter((l) => l.languagename.toLowerCase().includes(search.toLowerCase()))
+    const searchLanguage = (e) => {
         setSearch(e.target.value)
+    }
+    const handleEdit = (item) => {
+        setOpen(true)
+        setIni({ languagename: item.languagename })
+        setEditIndex(item._id)
     }
     return (
         <div>
             <Button onClick={handleOpen} variant='contained'>Add Language</Button>
-            <input type="text" placeholder='Search here...'  className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchLanguage} value={search} />
+            <input type="text" placeholder='Search here...' className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchLanguage} value={search} />
             <Modal
                 open={open}
                 onClose={handleClose}
             >
                 <Box sx={style}>
-                    <h1 className="text-3xl font-bold">Add language</h1>
+                    <h1 className="text-3xl font-bold">{editIndex!==null?"Edit Language":"Add Language"}</h1>
                     <Formik
                         initialValues={ini}
                         onSubmit={handleSubmit}
                     >
                         <Form className="p-2">
                             <Field name="languagename" placeholder="Enter Language" className="w-full p-2 border border-1 border-gray-400 mb-3"></Field>
-                            <Button variant='contained' className='w-full' type='submit' >Submit</Button>
+                            <Button variant='contained' className='w-full' type='submit' >{editIndex===null?"Submit":"Update"}</Button>
 
                         </Form>
                     </Formik>
                 </Box>
             </Modal>
-            
-            <TableContainer component={Paper} sx={{mt:3}}>
+
+            <TableContainer component={Paper} sx={{ mt: 3 }}>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                     <TableHead>
                         <TableRow>
@@ -144,13 +167,13 @@ const Language = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filterdLanguages.map((item,index) => (
+                        {filterdLanguages.map((item, index) => (
                             <StyledTableRow >
-                                
-                                <StyledTableCell align="left">{index+1}</StyledTableCell>
+
+                                <StyledTableCell align="left">{index + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{item.languagename}</StyledTableCell>
-                                <StyledTableCell align="right"><DeleteIcon color='error' onClick={()=>{handleDelete(item._id)}}/></StyledTableCell>
-                                <StyledTableCell align="right" ><EditSquareIcon color='primary'/></StyledTableCell>
+                                <StyledTableCell align="right"><DeleteIcon color='error' onClick={() => { handleDelete(item._id) }} /></StyledTableCell>
+                                <StyledTableCell align="right" ><EditSquareIcon color='primary' onClick={() => handleEdit(item)} /></StyledTableCell>
                             </StyledTableRow>
                         ))}
                     </TableBody>

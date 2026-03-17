@@ -78,23 +78,42 @@ const Topic = () => {
                 console.log(err);
             })
     }
+    const [editIndex, setEditIndex] = useState(null)
 
     const handleSubmit = (values, { resetForm }) => {
         console.log(values);
+        if (editIndex !== null) {
+            axios.patch(`https://generateapi.techsnack.online/api/topic/${editIndex}`, values, {
+                headers: {
+                    Authorization: token
+                }
+            }).then(() => {
+                alert("Topic updated successfully")
+                setOpen(false)
+                setEditIndex(null)
 
-        axios.post("https://generateapi.techsnack.online/api/topic", values, {
-            headers: {
-                Authorization: token
-            }
-        }).then(() => {
-            alert("Topic added successfully!")
-            setOpen(false)
-            resetForm()
-            fetchTopic()
-        }).catch((err) => {
-            console.log(err);
+            })
+                .catch((err) => {
+                    console.log(err);
 
-        })
+                })
+        }
+        else {
+
+            axios.post("https://generateapi.techsnack.online/api/topic", values, {
+                headers: {
+                    Authorization: token
+                }
+            }).then(() => {
+                alert("Topic added successfully!")
+                setOpen(false)
+                resetForm()
+                fetchTopic()
+            }).catch((err) => {
+                console.log(err);
+
+            })
+        }
     }
     const handleDelete = (id) => {
         axios.delete(`https://generateapi.techsnack.online/api/topic/${id}`, {
@@ -118,7 +137,6 @@ const Topic = () => {
         console.log(event.target.value);
 
     };
-
     const fetchLanguages = () => {
         axios.get("https://generateapi.techsnack.online/api/language", {
             headers:
@@ -139,6 +157,17 @@ const Topic = () => {
         fetchTopic()
 
     }, [])
+    const handleEdit = (item) => {
+        setOpen(true)
+        setSelectedLanguage(item.languagename._id)
+        console.log(selectedLanguage);
+
+        setIni({
+            topicname: item.topicname,
+            languagename: selectedLanguage
+        })
+        setEditIndex(item._id)
+    }
     const [search, setSearch] = useState("")
     const filteredTopic = topic.filter((item) => {
         const searchLower = search.toLowerCase();
@@ -160,25 +189,27 @@ const Topic = () => {
                 className='border  border-0'
             >
                 <Box sx={style}>
-                    <h1 className="text-3xl font-bold">Add topic</h1>
+                    <h1 className="text-3xl font-bold">{editIndex === null ? "Add topic" : "Edit Topic"}</h1>
                     <Formik
                         initialValues={ini}
                         onSubmit={handleSubmit}
+                        enableReinitialize={true}
                     >
                         {
                             (props) => (
 
 
                                 <Form className="p-2">
-                                    <FormControl fullWidth>
+                                    <FormControl fullWidth sx={{ mb: 1 }}>
                                         <InputLabel id="demo-simple-select-label">Language</InputLabel>
                                         <Select
                                             labelId="demo-simple-select-label"
                                             id="demo-simple-select"
-                                            value={props.values.languagename}
+                                            value={editIndex === null ? props.values.languagename : selectedLanguage}
                                             label="language"
                                             name='languagename'
                                             onChange={props.handleChange}
+                                            disabled={editIndex!==null}
                                         >
                                             {
                                                 languages.map((item, index) => {
@@ -193,7 +224,7 @@ const Topic = () => {
                                     </FormControl>
                                     <Field name="topicname" placeholder="Enter Topic" className="w-full p-2 border border-1 border-gray-400 mb-3"></Field>
 
-                                    <Button variant='contained' className='w-full' type='submit' >Submit</Button>
+                                    <Button variant='contained' className='w-full' type='submit' >{editIndex === null ? "Submit" : "Update"}</Button>
 
                                 </Form>
                             )
@@ -215,19 +246,19 @@ const Topic = () => {
                     </TableHead>
                     <TableBody>
                         {filteredTopic.map((item, index) => (
-                            <StyledTableRow >
+                            <StyledTableRow key={item._id}>
 
                                 <StyledTableCell align="left">{index + 1}</StyledTableCell>
                                 <StyledTableCell align="center">{item.languagename.languagename}</StyledTableCell>
                                 <StyledTableCell align="center">{item.topicname}</StyledTableCell>
                                 <StyledTableCell align="right"><DeleteIcon color='error' onClick={() => { handleDelete(item._id) }} /></StyledTableCell>
-                                <StyledTableCell align="right" ><EditSquareIcon color='primary' /></StyledTableCell>
+                                <StyledTableCell align="right" ><EditSquareIcon color='primary' onClick={() => handleEdit(item)} /></StyledTableCell>
                             </StyledTableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+        </div >
 
     )
 }
