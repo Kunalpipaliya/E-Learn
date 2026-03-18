@@ -16,7 +16,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Link, Switch } from 'react-router-dom/cjs/react-router-dom';
+import { Link, Switch, useHistory } from 'react-router-dom/cjs/react-router-dom';
 import { useRouteMatch } from 'react-router-dom/cjs/react-router-dom';
 import { Route } from 'react-router-dom/cjs/react-router-dom';
 import Questions from '../Pages/Questions';
@@ -24,9 +24,13 @@ import Topic from '../Pages/Topic';
 import Language from '../Pages/Language';
 import Dashboard from '../Pages/Dashboard';
 import Counters from './Counters';
+import Button from '@mui/material/Button';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Login from '../Auth/Login';
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
+    const history = useHistory()
     const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isClosing, setIsClosing] = React.useState(false);
@@ -46,7 +50,10 @@ function ResponsiveDrawer(props) {
         }
     };
     const currentUser = JSON.parse(localStorage.getItem("currentUser"))
-
+    const handleLogout = () => {
+        localStorage.removeItem('currentUser')
+        history.push("/")
+    }
     const drawer = (
         <div>
             <Toolbar><strong>E Learning</strong></Toolbar>
@@ -67,8 +74,18 @@ function ResponsiveDrawer(props) {
                     </ListItem>
                 ))}
             </List>
-            
-        </div>
+
+
+            <Toolbar sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start', position: 'fixed', bottom: 10, gap: 3 }}>
+
+                <span>{currentUser?currentUser:"Guest"}</span>
+                <Button variant="text" color='error' startIcon={<LogoutIcon />} onClick={handleLogout}>
+                    Logout
+                </Button>
+
+            </Toolbar>
+
+        </div >
     );
 
     // Remove this const when copying and pasting into your project.
@@ -76,7 +93,7 @@ function ResponsiveDrawer(props) {
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            {/* <AppBar
+            <AppBar
                 position="fixed"
                 sx={{
                     width: { sm: `calc(100% - ${drawerWidth}px)` },
@@ -93,11 +110,9 @@ function ResponsiveDrawer(props) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap component="div">
-                        Hello, {currentUser.split("@")[0]}
-                    </Typography>
+                   
                 </Toolbar>
-            </AppBar> */}
+            </AppBar>
             <Box
                 component="nav"
                 sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -152,6 +167,7 @@ function ResponsiveDrawer(props) {
                         <Language />
 
                     </Route>
+
 
 
                 </Switch>

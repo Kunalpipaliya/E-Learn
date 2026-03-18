@@ -68,7 +68,7 @@ const Counters = () => {
             {
                 ['language', 'topic', 'Questions'].map((item, index) => {
                     return (
-                            <div className="flex flex-col p-5 rounded-lg shadow-lg bg-gray-50 text-center" style={{width:"200px"}}>
+                            <div className="flex flex-col p-5 rounded-lg shadow-lg bg-gray-50 text-center" key={index} style={{width:"200px"}}>
                                 <strong>
                                     <Link to={`/dashboard/${item.toLowerCase()}`}>{item}</Link>
                                 </strong>
