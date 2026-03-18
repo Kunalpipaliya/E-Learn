@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom/cjs/react-router-dom'
 import Button from '@mui/material/Button'
+import toast from 'react-hot-toast'
 const Login = () => {
     const token = "txksypTpRFtykHTh"
     const [ini, setIni] = useState({
@@ -10,6 +11,7 @@ const Login = () => {
         password: ""
     })
     const handleSubmit = (values, { resetForm }) => {
+        const loadingtoast=toast.loading("Authenticating user....")
         console.log(values);
         localStorage.setItem("currentUser", JSON.stringify(values.email))
         axios.post("https://generateapi.techsnack.online/auth/Login", values, {
@@ -18,12 +20,14 @@ const Login = () => {
             }
         })
             .then(() => {
-                alert("Login successful")
+                // alert("Login successful")
+                toast.success("Login successful!",{id:loadingtoast})
                 window.location.href = "/dashboard"
             })
             .catch((err) => {
                 console.log(err);
-                alert("Login failed")
+                // alert("Login failed")
+                toast.error("Login failed",{id:loadingtoast})
             })
     }
     return (

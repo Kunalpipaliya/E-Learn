@@ -26,10 +26,12 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: '90%',
+  maxWidth: 450,
   bgcolor: 'background.paper',
   boxShadow: 24,
-  p: 4,
+  p: { xs: 2, sm: 4 },
+  borderRadius: 2,
 };
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -175,11 +177,11 @@ const Questions = () => {
     fetchQuestion()
 
   }, [])
-  
+
   const handleEdit = (item) => {
     setOpen(true)
-    const langId=item.topicname.languagename._id
-    const topicId=item.topicname._id
+    const langId = item.topicname.languagename._id
+    const topicId = item.topicname._id
     setSelectedLanguage(langId)
     setSelectedTopic(topicId)
     console.log(langId);
@@ -205,8 +207,18 @@ const Questions = () => {
   }
   return (
     <div>
-      <Button onClick={handleOpen} variant='contained'>Add Question</Button>
-      <input type="text" placeholder='Search here...' className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchQuestion} value={search} />
+      <Box className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+        <Button onClick={handleOpen} variant='contained' sx={{ height: '50px' }}>
+          Add Question
+        </Button>
+        <input
+          type="text"
+          placeholder='Search language, topic or question...'
+          className='w-full md:max-w-md p-3 border border-gray-300 rounded-full outline-none focus:border-blue-500 transition-all'
+          onChange={searchQuestion}
+          value={search}
+        />
+      </Box>
       <Modal
         open={open}
         onClose={handleClose}
@@ -252,7 +264,7 @@ const Questions = () => {
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      value={ props.values.topicname}
+                      value={props.values.topicname}
                       label="topic"
                       name='topicname'
                       onChange={props.handleChange}
@@ -285,34 +297,50 @@ const Questions = () => {
           </Formik>
         </Box>
       </Modal>
-      <TableContainer component={Paper} sx={{ mt: 3 }}>
+      <TableContainer component={Paper} sx={{ display: { xs: 'none', md: 'block' }, mt: 3 }}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell>Sr no</StyledTableCell>
-              <StyledTableCell align="center">Language Name</StyledTableCell>
-              <StyledTableCell align="center">Topic Name</StyledTableCell>
+              <StyledTableCell align="center">Language</StyledTableCell>
+              <StyledTableCell align="center">Topic</StyledTableCell>
               <StyledTableCell align="center">Question</StyledTableCell>
-              <StyledTableCell align="right">Remove</StyledTableCell>
-              <StyledTableCell align="right">Edit</StyledTableCell>
-
+              <StyledTableCell align="right">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredQuestions.map((item, index) => (
-              <StyledTableRow key={item._id} >
-
+              <StyledTableRow key={item._id}>
                 <StyledTableCell align="left">{index + 1}</StyledTableCell>
-                <StyledTableCell align="center">{item.languagename.languagename}</StyledTableCell>
-                <StyledTableCell align="center">{item.topicname.topicname}</StyledTableCell>
+                <StyledTableCell align="center">{item.languagename?.languagename}</StyledTableCell>
+                <StyledTableCell align="center">{item.topicname?.topicname}</StyledTableCell>
                 <StyledTableCell align="center">{item.question}</StyledTableCell>
-                <StyledTableCell align="right"><DeleteIcon color='error' onClick={() => { handleDelete(item._id) }} /></StyledTableCell>
-                <StyledTableCell align="right" ><EditSquareIcon color='primary' onClick={() => handleEdit(item)} /></StyledTableCell>
+                <StyledTableCell align="right">
+                  <EditSquareIcon color='primary' sx={{ cursor: 'pointer', mr: 1 }} onClick={() => handleEdit(item)} />
+                  <DeleteIcon color='error' sx={{ cursor: 'pointer' }} onClick={() => handleDelete(item._id)} />
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box sx={{ display: { xs: 'block', md: 'none' }, mt: 2 }}>
+        {filteredQuestions.map((item, index) => (
+          <Paper key={item._id} sx={{ p: 2, mb: 2 }}>
+            <Typography variant="caption" color="textSecondary">
+              {item.languagename.languagename} • {item.topicname?.topicname}
+            </Typography>
+            <Typography variant="body1" sx={{ fontWeight: 'bold', my: 1 }}>
+              {item.question}
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 1 }}>
+              <Button size="small" startIcon={<EditSquareIcon />} onClick={() => handleEdit(item)}>Edit</Button>
+              <Button size="small" color="error" startIcon={<DeleteIcon />} onClick={() => handleDelete(item._id)}>Delete</Button>
+            </Box>
+          </Paper>
+        ))}
+      </Box>
     </div>
 
   )

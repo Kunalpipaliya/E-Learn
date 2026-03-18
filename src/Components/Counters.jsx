@@ -64,7 +64,7 @@ const Counters = () => {
     }
     return (
         <div >
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-4 flex-wrap">
             {
                 ['language', 'topic', 'Questions'].map((item, index) => {
                     return (

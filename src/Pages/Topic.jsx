@@ -23,14 +23,15 @@ import Select from '@mui/material/Select';
 
 const style = {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '90%',
+  maxWidth: 450,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: { xs: 2, sm: 4 },
+  borderRadius: 2,
 };
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -181,8 +182,18 @@ const Topic = () => {
     }
     return (
         <div>
-            <Button onClick={handleOpen} variant='contained'>Add Topic</Button>
-            <input type="text" placeholder='Search here...' className='w-full mt-5 p-3 border border-1 rounded-full outline outline-0' onChange={searchTopic} value={search} />
+            <Box className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+                <Button onClick={handleOpen} variant='contained' sx={{ py: 1.5 }}>
+                    Add Topic
+                </Button>
+                <input
+                    type="text"
+                    placeholder='Search topics or languages...'
+                    className='w-full md:max-w-md p-3 border border-gray-300 rounded-full outline-none focus:ring-2 focus:ring-blue-500 transition-all'
+                    onChange={searchTopic}
+                    value={search}
+                />
+            </Box>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -209,7 +220,7 @@ const Topic = () => {
                                             label="language"
                                             name='languagename'
                                             onChange={props.handleChange}
-                                            disabled={editIndex!==null}
+                                            disabled={editIndex !== null}
                                         >
                                             {
                                                 languages.map((item, index) => {
@@ -232,32 +243,50 @@ const Topic = () => {
                     </Formik>
                 </Box>
             </Modal>
-            <TableContainer component={Paper} sx={{ mt: 3 }}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableContainer component={Paper} sx={{ display: { xs: 'none', md: 'block' }, mt: 3 }}>
+                <Table sx={{ minWidth: 700 }}>
                     <TableHead>
                         <TableRow>
                             <StyledTableCell>Sr no</StyledTableCell>
                             <StyledTableCell align="center">Language Name</StyledTableCell>
                             <StyledTableCell align="center">Topic Name</StyledTableCell>
-                            <StyledTableCell align="right">Remove</StyledTableCell>
-                            <StyledTableCell align="right">Edit</StyledTableCell>
-
+                            <StyledTableCell align="right">Actions</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {filteredTopic.map((item, index) => (
                             <StyledTableRow key={item._id}>
-
-                                <StyledTableCell align="left">{index + 1}</StyledTableCell>
-                                <StyledTableCell align="center">{item.languagename.languagename}</StyledTableCell>
+                                <StyledTableCell>{index + 1}</StyledTableCell>
+                                <StyledTableCell align="center">{item.languagename?.languagename}</StyledTableCell>
                                 <StyledTableCell align="center">{item.topicname}</StyledTableCell>
-                                <StyledTableCell align="right"><DeleteIcon color='error' onClick={() => { handleDelete(item._id) }} /></StyledTableCell>
-                                <StyledTableCell align="right" ><EditSquareIcon color='primary' onClick={() => handleEdit(item)} /></StyledTableCell>
+                                <StyledTableCell align="right">
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                                        <EditSquareIcon color='primary' className="cursor-pointer" onClick={() => handleEdit(item)} />
+                                        <DeleteIcon color='error' className="cursor-pointer" onClick={() => handleDelete(item._id)} />
+                                    </Box>
+                                </StyledTableCell>
                             </StyledTableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Box sx={{ display: { xs: 'block', md: 'none' }, mt: 2 }}>
+                {filteredTopic.map((item, index) => (
+                    <Paper key={item._id} sx={{ p: 2, mb: 2 }}>
+                        <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>
+                            #{index + 1} • {item.languagename?.languagename}
+                        </Typography>
+                        <Typography variant="h6" sx={{ my: 1 }}>
+                            {item.topicname}
+                        </Typography>
+                        <Box className="flex justify-end gap-3 border-t pt-2 mt-2">
+                            <Button size="small" startIcon={<EditSquareIcon />} onClick={() => handleEdit(item)}>Edit</Button>
+                            <Button size="small" color="error" startIcon={<DeleteIcon />} onClick={() => handleDelete(item._id)}>Delete</Button>
+                        </Box>
+                    </Paper>
+                ))}
+            </Box>
         </div >
 
     )

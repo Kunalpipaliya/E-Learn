@@ -1,9 +1,11 @@
 import { Formik, Form, Field } from 'formik'
 import React, { useState } from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom/cjs/react-router-dom'
+import { Link, useHistory } from 'react-router-dom/cjs/react-router-dom'
 import Button from '@mui/material/Button'
+import toast from 'react-hot-toast'
 const SIgnUp = () => {
+    const history =useHistory()
     const token = "txksypTpRFtykHTh"
     const [ini, setIni] = useState({
         name: "",
@@ -11,18 +13,21 @@ const SIgnUp = () => {
         password: ""
     })
     const handleSubmit = (values, { resetForm }) => {
+        const loadingToast = toast.loading("Creating your account...");
         axios.post("https://generateapi.techsnack.online/auth/signUp", values, {
             headers: {
                 authorization: token
             }
         })
             .then(() => {
-                alert("Sign up successful")
-                window.location.href = "/login"
+                // alert("Sign up successful")
+                toast.success("Sign up successful!",{id:loadingToast})
+                history.push("/")
             })
             .catch((err) => {
                 console.log(err);
-                alert("Sign up failed")
+                // alert("Sign up failed")
+                toast.error("Sign up failed",{id:loadingToast})
             })
     }
     return (

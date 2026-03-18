@@ -10,9 +10,11 @@ import Topic from './Pages/Topic';
 import Questions from './Pages/Questions';
 import Drawer from '@mui/material/Drawer';
 import ResponsiveDrawer from './Components/Drawer';
+import { Toaster } from 'react-hot-toast';
 function App() {
   return (
     <div className="App">
+      <Toaster position='top-center' reverseOrder={false}/>
       <BrowserRouter>
         <Switch>
           
