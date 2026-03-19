@@ -17,6 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import toast from 'react-hot-toast';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -85,10 +86,13 @@ const Language = () => {
                     Authorization: token
                 }
             }).then(() => {
-                alert("language upadated successfully")
+                setEditIndex(null)
+                toast.success("language upadated successfully")
                 fetchLanguages()
                 setOpen(false)
-                setEditIndex(null)
+                setIni({
+                    languagename: ""
+                })
             }).catch((err) => {
                 console.log(err);
             })
@@ -100,7 +104,7 @@ const Language = () => {
                     Authorization: token
                 }
             }).then(() => {
-                alert("Language added successfully!")
+                toast.success("Language added successfully!")
                 setOpen(false)
                 resetForm()
                 fetchLanguages()
@@ -117,7 +121,7 @@ const Language = () => {
             }
         })
             .then(() => {
-                alert("laguage Deleted Successfully!")
+                toast.success   ("laguage Deleted Successfully!")
                 fetchLanguages()
             })
             .catch((err) => {
@@ -159,6 +163,7 @@ const Language = () => {
                     <Formik
                         initialValues={ini}
                         onSubmit={handleSubmit}
+                        enableReinitialize
                     >
                         <Form className="p-2">
                             <Field name="languagename" placeholder="Enter Language" className="w-full p-2 border border-1 border-gray-400 mb-3"></Field>

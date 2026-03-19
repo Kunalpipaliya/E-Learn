@@ -76,7 +76,7 @@ function ResponsiveDrawer(props) {
             </List>
 
 
-            <Toolbar sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start', position: 'absolute', bottom: 10, gap: 3 }}>
+            <Toolbar sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start', position: 'fixed', bottom: 10, gap: 3 }}>
 
                 <span>{currentUser?currentUser:"Guest"}</span>
                 <Button variant="text" color='error' startIcon={<LogoutIcon />} onClick={handleLogout}>

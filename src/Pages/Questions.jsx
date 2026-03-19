@@ -20,6 +20,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import toast from 'react-hot-toast';
 
 const style = {
   position: 'absolute',
@@ -89,7 +90,7 @@ const Questions = () => {
           Authorization: token
         }
       }).then(() => {
-        alert("Question Updated successfully")
+        toast.success("Question Updated successfully")
         setOpen(false)
         setEditIndex(null)
         fetchQuestion()
@@ -106,7 +107,7 @@ const Questions = () => {
           Authorization: token
         }
       }).then(() => {
-        alert("Question added successfully!")
+        toast.success("Question added successfully!")
         setOpen(false)
         resetForm()
         fetchQuestion()
@@ -123,7 +124,7 @@ const Questions = () => {
       }
     })
       .then(() => {
-        alert("Question Deleted Successfully!")
+        toast.success("Question Deleted Successfully!")
         fetchQuestion()
       })
       .catch((err) => {
